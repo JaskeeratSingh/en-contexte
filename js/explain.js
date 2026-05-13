@@ -169,7 +169,7 @@ export function buildExplainPrompt(r) {
 
 French: "${r.fr}"
 English: "${r.en}"
-Word being tested (the cloze answer): "${r.ans}"
+Word being tested (the answer): "${r.ans}"
 
 Structure your response exactly like this:
 
@@ -186,7 +186,7 @@ Then a numbered list, **one item per French word or tightly-connected word group
 
 After the numbered list, write **"Putting it all together:"** as a short paragraph, followed by an indented bullet list that maps each chunk of French to English (e.g. * "Il" (He) +). End with a complete summary sentence.
 
-Finally, add **one short paragraph** about the grammar context: what tense or construction this sentence demonstrates, when learners encounter it, and any note about the cloze word "${r.ans}" specifically (e.g. is it tricky, is it irregular, common pitfalls).
+Finally, add **one short paragraph** about the grammar context: what tense or construction this sentence demonstrates, when learners encounter it, and any note about the word "${r.ans}" specifically (e.g. is it tricky, is it irregular, common pitfalls).
 
 Formatting rules:
 - Use **bold** for all French words and phrases

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Background: cream like the app bg -->
+  <rect width="64" height="64" rx="10" fill="#f4efe6"/>
+
+  <!-- Bold serif E. Strokes are thick enough to survive a 16x16 render,
+       and the E fills more of the canvas than a typical letterform would
+       to maximize legibility when shrunk. -->
+  <g fill="#1a1814">
+    <!-- vertical spine -->
+    <rect x="12" y="10" width="10" height="44"/>
+    <!-- top arm -->
+    <rect x="12" y="10" width="38" height="9"/>
+    <!-- middle arm (shorter, classic serif E) -->
+    <rect x="12" y="28" width="28" height="8"/>
+    <!-- bottom arm -->
+    <rect x="12" y="45" width="38" height="9"/>
+    <!-- top serifs -->
+    <rect x="9" y="10" width="5" height="12"/>
+    <rect x="47" y="10" width="5" height="12"/>
+    <!-- bottom serifs -->
+    <rect x="9" y="42" width="5" height="12"/>
+    <rect x="47" y="42" width="5" height="12"/>
+  </g>
+
+  <!-- Accent bullet dot, middle-right. Sized so it survives 16px scaling. -->
+  <circle cx="56" cy="32" r="4.5" fill="#b54a2c"/>
+</svg>
