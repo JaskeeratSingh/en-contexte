@@ -1,0 +1,47 @@
+:root {
+  --bg:       #f4efe6;
+  --bg-card:  #fbf7ee;
+  --ink:      #1a1814;
+  --ink-soft: #5b554c;
+  --line:     #d8cfbe;
+  --accent:   #b54a2c;
+  --accent-2: #d6a248;       /* gold for XP */
+  --good:     #2f7a4d;
+  --bad:      #b03030;
+  --shadow:   0 1px 0 rgba(20,16,8,.04), 0 8px 24px -12px rgba(20,16,8,.16);
+  --radius:   4px;
+  --mono:     "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --serif:    "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #16140f;
+    --bg-card:  #1d1a13;
+    --ink:      #ede4cf;
+    --ink-soft: #978c75;
+    --line:     #2e2a20;
+    --accent:   #e07a55;
+    --accent-2: #e4b96a;
+    --good:     #6dba88;
+    --bad:      #d96a6a;
+    --shadow:   0 1px 0 rgba(0,0,0,.3), 0 8px 24px -8px rgba(0,0,0,.5);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--serif);
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+button { font-family: inherit; font-size: inherit; cursor: pointer; border: none; background: none; color: inherit; padding: 0; }
+button:disabled { cursor: not-allowed; }
+input { font-family: inherit; font-size: inherit; color: inherit; }
+

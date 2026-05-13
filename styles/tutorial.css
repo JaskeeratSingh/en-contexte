@@ -1,0 +1,115 @@
+/* ============================================================
+   First-use tutorial overlay
+   ============================================================ */
+
+.tut-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Dimmed backdrop. The cutout punches a hole in it via box-shadow trick:
+   a big spread shadow on the cutout fills the whole viewport with the
+   tint, while the cutout itself stays clear. */
+.tut-cutout {
+  position: fixed;
+  border-radius: 10px;
+  box-shadow: 0 0 0 9999px rgba(20, 22, 28, 0.65);
+  transition: all 200ms ease;
+  pointer-events: none;
+  /* Faint pulsing glow to draw the eye */
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 0;
+}
+
+/* When there's no spotlight target (welcome/done screens), the cutout is
+   hidden via display:none from JS — and we want a full backdrop instead.
+   We get this by NOT setting box-shadow when hidden; the .tut-tip has its
+   own background overlay below. */
+.tut-overlay:has(.tut-cutout[style*="display: none"])::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 22, 28, 0.65);
+  pointer-events: none;
+}
+
+.tut-tip {
+  position: fixed;
+  background: var(--bg-card);
+  color: var(--ink);
+  border-radius: var(--radius);
+  padding: 22px 24px 18px;
+  width: 340px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15);
+  border: 1px solid var(--line);
+  pointer-events: auto;
+  transition: top 200ms ease, left 200ms ease;
+}
+.tut-tip .tut-step {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+.tut-tip h4 {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.tut-tip p {
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  margin: 0 0 18px;
+}
+.tut-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tut-skip {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+}
+.tut-skip:hover { color: var(--ink); }
+.tut-prev, .tut-next {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 120ms;
+}
+.tut-prev:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.tut-next {
+  background: var(--ink);
+  color: var(--bg-card);
+  border-color: var(--ink);
+}
+.tut-next:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>En Contexte: French vocabulary in context</title>
+
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/layout.css">
+<link rel="stylesheet" href="styles/cover.css">
+<link rel="stylesheet" href="styles/card.css">
+<link rel="stylesheet" href="styles/settings.css">
+<link rel="stylesheet" href="styles/tutorial.css">
+
+</head>
+
+<body>
+
+<header id="header" hidden>
+  <div class="brand"><a href="#" id="brand-link">en <b>contexte</b></a></div>
+  <div class="stats" id="stats">
+    <span class="xp">
+      <svg class="daily-ring" id="daily-ring" viewBox="0 0 18 18">
+        <circle cx="9" cy="9" r="7" fill="none" stroke="currentColor" stroke-width="2" stroke-opacity=".15"/>
+        <circle id="daily-ring-fill" cx="9" cy="9" r="7" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-dasharray="44" stroke-dashoffset="44"
+                stroke-linecap="round" transform="rotate(-90 9 9)"/>
+      </svg>
+      XP <b id="stat-xp">0</b>
+    </span>
+    <span class="streak-chip" id="streak-chip" title="Daily streak">
+      🔥 <b id="stat-day-streak">0</b>d
+    </span>
+    <span>acc <b id="stat-acc">—</b></span>
+    <span>session <b id="stat-streak">0</b></span>
+    <button class="gear" id="btn-stats" title="Stats">stats</button>
+    <button class="gear" id="btn-settings" title="Settings">settings</button>
+  </div>
+</header>
+
+<main>
+  <div id="app"></div>
+</main>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal" id="modal-content">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
