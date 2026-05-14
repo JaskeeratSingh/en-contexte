@@ -3,28 +3,28 @@
   min-height: calc(100vh - 80px);
   max-width: 720px;
   margin: 0 auto;
-  padding: 80px 28px;
+  padding: 48px 28px 56px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .cover-mark {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: .18em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 .cover-mark b { color: var(--accent); font-weight: 500; }
 .cover h1 {
   font-family: var(--serif);
-  font-size: 58px;
+  font-size: 44px;
   line-height: 1.05;
   letter-spacing: -0.02em;
   font-weight: 400;
   color: var(--ink);
-  margin: 0 0 20px;
+  margin: 0 0 14px;
 }
 .cover h1 em {
   font-style: italic;
@@ -34,38 +34,38 @@
 .cover-tagline {
   font-family: var(--serif);
   font-style: italic;
-  font-size: 22px;
+  font-size: 17px;
   line-height: 1.5;
   color: var(--ink-soft);
-  margin: 0 0 56px;
+  margin: 0 0 32px;
   max-width: 540px;
 }
 
 .cover-features {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 24px 36px;
-  margin-bottom: 56px;
+  gap: 16px 32px;
+  margin-bottom: 32px;
   max-width: 600px;
 }
 .cover-feat {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: flex-start;
 }
 .cover-feat-icon {
   flex-shrink: 0;
-  width: 28px; height: 28px;
+  width: 24px; height: 24px;
   margin-top: 2px;
   color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.cover-feat-icon svg { width: 22px; height: 22px; }
+.cover-feat-icon svg { width: 18px; height: 18px; }
 .cover-feat-title {
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--ink);
   margin: 0 0 2px;
@@ -73,9 +73,9 @@
 }
 .cover-feat-desc {
   font-family: var(--serif);
-  font-size: 14px;
+  font-size: 13px;
   color: var(--ink-soft);
-  line-height: 1.5;
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -87,12 +87,12 @@
 }
 .cover-cta {
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 13px;
   letter-spacing: .12em;
   text-transform: uppercase;
   background: var(--ink);
   color: var(--bg-card);
-  padding: 16px 28px;
+  padding: 14px 24px;
   border-radius: 999px;
   font-weight: 500;
   transition: all 200ms ease;
@@ -105,7 +105,7 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px -8px rgba(0,0,0,.4);
 }
-.cover-cta svg { width: 14px; height: 14px; }
+.cover-cta svg { width: 13px; height: 13px; }
 .cover-cta-note {
   font-family: var(--mono);
   font-size: 11px;
@@ -158,4 +158,3 @@
   letter-spacing: .08em;
 }
 .gear:hover { border-color: var(--ink); color: var(--ink); }
-

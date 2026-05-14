@@ -113,3 +113,24 @@
   background: var(--accent);
   border-color: var(--accent);
 }
+
+/* When the tutorial is actively spotlighting an element inside the settings
+   modal, lift the modal above the dim backdrop (which sits at z-index 1000).
+   The tooltip then needs to sit above the modal so it doesn't get hidden
+   behind it. The cutout still highlights the target with its outline glow,
+   though the box-shadow dim is no longer visible against the lifted modal. */
+body.tut-with-modal .modal-bg {
+  z-index: 1100;
+}
+body.tut-with-modal .tut-tip {
+  z-index: 1200;
+}
+body.tut-with-modal .tut-cutout {
+  z-index: 1150;
+  /* Drop the dimming box-shadow when the modal is above us; the modal would
+     occlude it anyway, and at this z-order we'd be dimming the modal itself
+     which looks wrong. The outline alone signals "look here". */
+  box-shadow: none;
+  outline-width: 3px;
+  outline-color: var(--accent);
+}

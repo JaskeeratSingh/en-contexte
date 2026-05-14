@@ -69,7 +69,7 @@ export function openSettings() {
       <select id="set-voicename"></select>
     </div>
 
-    <h3>AI Explain</h3>
+    <h3 id="settings-ai">AI Explain</h3>
     <div class="modal-row">
       <label>Provider
         <span class="desc">Gemini's free tier (1500 calls/day) needs no payment. Anthropic charges per call but is more polished.</span>

@@ -57,7 +57,41 @@ const STEPS = [
   {
     selector: '#btn-settings',
     title: 'Settings live here',
-    body:  "Change batch size, daily new-card cap, voice, AI Explain provider, and more. Stats are next to it.",
+    body:  "Batch size, daily cap, voice, AI Explain, and more. Stats are next to it. Click Next to peek at the AI Explain setup.",
+  },
+  {
+    selector: '#row-gemini-key',
+    title: 'Free AI tutor (optional)',
+    body:  "After answering, click Explain for a tutor-style breakdown: grammar, conjugation, idioms. Paste a Gemini key here (free at aistudio.google.com/apikey, no card needed, 1500 calls/day). The app works fully without it — set this up later if you want.",
+    // When this step opens: ensure settings is open, force Gemini provider so
+    // the API-key row is visible, scroll to it. When it closes: shut the modal.
+    onEnter: async () => {
+      const settings = await import('./settings.js');
+      // Open settings if it isn't already
+      if (!document.getElementById('modal-bg').classList.contains('show')) {
+        settings.openSettings();
+      }
+      // Make sure provider is set to Gemini so the API key row renders.
+      // We don't save this back to disk — it's a transient view-only nudge so
+      // the user sees what they came for. They'll reselect on real interaction.
+      const rowGemini = document.getElementById('row-gemini-key');
+      const rowAnth1  = document.getElementById('row-anthropic-key');
+      const rowAnth2  = document.getElementById('row-anthropic-model');
+      if (rowGemini) rowGemini.hidden = false;
+      if (rowAnth1)  rowAnth1.hidden  = true;
+      if (rowAnth2)  rowAnth2.hidden  = true;
+      // Scroll the AI heading into view (don't smooth-scroll — we need to
+      // measure positions for the spotlight, and a slow animation interferes).
+      const target = document.getElementById('settings-ai');
+      if (target && target.scrollIntoView) target.scrollIntoView({ block: 'start' });
+      // Bump the modal above the tutorial backdrop so it's visible.
+      document.body.classList.add('tut-with-modal');
+    },
+    onLeave: () => {
+      const bg = document.getElementById('modal-bg');
+      if (bg) bg.classList.remove('show');
+      document.body.classList.remove('tut-with-modal');
+    },
   },
   {
     selector: null,
@@ -109,12 +143,40 @@ function ensureOverlay() {
   `;
   document.body.appendChild(overlay);
 
-  $('tut-skip').addEventListener('click', endTutorial);
-  $('tut-prev').addEventListener('click', () => { if (_stepIndex > 0) showStep(_stepIndex - 1); });
-  $('tut-next').addEventListener('click', () => {
-    if (_stepIndex >= STEPS.length - 1) endTutorial();
-    else showStep(_stepIndex + 1);
+  $('tut-skip').addEventListener('click', () => {
+    // run onLeave for the current step if it has one
+    const cur = STEPS[_stepIndex];
+    if (cur && cur.onLeave) cur.onLeave();
+    endTutorial();
   });
+  $('tut-prev').addEventListener('click', () => {
+    if (_stepIndex > 0) gotoStep(_stepIndex - 1);
+  });
+  $('tut-next').addEventListener('click', () => {
+    if (_stepIndex >= STEPS.length - 1) {
+      const cur = STEPS[_stepIndex];
+      if (cur && cur.onLeave) cur.onLeave();
+      endTutorial();
+    } else {
+      gotoStep(_stepIndex + 1);
+    }
+  });
+}
+
+/** Navigate from the current step to a target step, running onLeave/onEnter
+ *  hooks in order. onEnter is awaited before painting the step so the new
+ *  spotlight target (e.g., a row in a freshly-opened settings modal) is
+ *  in the DOM when we measure it. */
+async function gotoStep(newIndex) {
+  const cur = STEPS[_stepIndex];
+  const next = STEPS[newIndex];
+  if (cur && cur !== next && cur.onLeave) cur.onLeave();
+  if (next && next.onEnter) {
+    try { await next.onEnter(); } catch (e) { console.error('tutorial onEnter:', e); }
+    // Small extra beat for the modal to render rows / scroll to settle
+    await new Promise(r => setTimeout(r, 80));
+  }
+  showStep(newIndex);
 }
 
 function showStep(i) {
