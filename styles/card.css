@@ -816,3 +816,26 @@ body[data-fontsize="lg"] .translation { font-size: 17px; }
   max-width: 420px;
   line-height: 1.6;
 }
+
+/* Band picker inside the done-today screen. Reuses the .band-picker styles
+   already defined for the main card view; we just need a wrapper and label
+   for the "Or switch to another band" section. */
+.done-bands {
+  margin: 24px auto 8px;
+  max-width: 520px;
+}
+.done-bands-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 12px;
+}
+.done-bands .band-picker {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.done-bands .band-picker label { display: none; }

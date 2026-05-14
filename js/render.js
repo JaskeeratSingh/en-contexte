@@ -426,9 +426,16 @@ export function renderDoneForToday() {
         <button class="done-action primary" id="done-raise-cap">
           + raise today's limit by 10
         </button>
-        <button class="done-action" id="done-switch-band">
-          switch to another band
-        </button>
+      </div>
+      <div class="done-bands">
+        <div class="done-bands-label">Or switch to another band</div>
+        <div class="band-picker">
+          ${Array.from({length: S.data.bands}, (_, i) => i + 1).map(b => {
+            const bs = computeBandProgress(b);
+            const cls = (b === S.band ? 'active' : '') + (bs.mastered > 0 ? ' has-progress' : '');
+            return `<button data-band="${b}" class="${cls}" title="${bs.mastered}/${bs.total} mastered"><span>${b}</span><span class="dot"></span></button>`;
+          }).join('')}
+        </div>
       </div>
       <p class="done-hint">
         Spaced repetition works best when you stop. Come back tomorrow.
@@ -441,7 +448,25 @@ export function renderDoneForToday() {
     saveMeta();
     advance();
   });
-  $('done-switch-band').addEventListener('click', openSettings);
+  // Wire up the band-picker buttons — clicking switches band, dissolves the
+  // current batch (so the new band gets a fresh one), and advances.
+  // We also raise the daily new-card cap by 10 because switching bands here
+  // is an explicit "I want to keep going with something different" signal —
+  // otherwise the global cap would just re-trigger the done screen for the
+  // new band too.
+  document.querySelectorAll('.done-bands .band-picker button').forEach(b => {
+    b.addEventListener('click', async () => {
+      const newBand = parseInt(b.dataset.band, 10);
+      if (newBand === S.band) return;
+      S.band = newBand;
+      S.batch = null;
+      S.dailyNewLimit += 10;
+      await persistBatch();
+      buildPool();
+      advance();
+      saveMeta();
+    });
+  });
   updateStats();
 }
 
