@@ -19,7 +19,7 @@ import { $ } from './util.js';
 
 const STEPS = [
   {
-    selector: null,                            // null = centered modal (no spotlight)
+    selector: null,
     title: 'Welcome to En Contexte',
     body:  "Quick 60-second tour. Skip anytime.",
     cta:   "Show me",
@@ -55,43 +55,14 @@ const STEPS = [
     body:  "Type each card correctly 3 times in a row to graduate it from this batch. Only then do new cards appear. Wrong answers reset the streak.",
   },
   {
-    selector: '#btn-settings',
-    title: 'Settings live here',
-    body:  "Batch size, daily cap, voice, AI Explain, and more. Stats are next to it. Click Next to peek at the AI Explain setup.",
+    selector: '#btn-explain-preview',
+    title: 'Free AI tutor',
+    body:  "After answering, click Explain for a tutor-style breakdown of the sentence: grammar, conjugation, idioms. Google's Gemini gives you 1500 free explanations per day. Grab a key at aistudio.google.com/apikey (no credit card) and paste it in settings whenever you're ready.",
   },
   {
-    selector: '#row-gemini-key',
-    title: 'Free AI tutor (optional)',
-    body:  "After answering, click Explain for a tutor-style breakdown: grammar, conjugation, idioms. Paste a Gemini key here (free at aistudio.google.com/apikey, no card needed, 1500 calls/day). The app works fully without it — set this up later if you want.",
-    // When this step opens: ensure settings is open, force Gemini provider so
-    // the API-key row is visible, scroll to it. When it closes: shut the modal.
-    onEnter: async () => {
-      const settings = await import('./settings.js');
-      // Open settings if it isn't already
-      if (!document.getElementById('modal-bg').classList.contains('show')) {
-        settings.openSettings();
-      }
-      // Make sure provider is set to Gemini so the API key row renders.
-      // We don't save this back to disk — it's a transient view-only nudge so
-      // the user sees what they came for. They'll reselect on real interaction.
-      const rowGemini = document.getElementById('row-gemini-key');
-      const rowAnth1  = document.getElementById('row-anthropic-key');
-      const rowAnth2  = document.getElementById('row-anthropic-model');
-      if (rowGemini) rowGemini.hidden = false;
-      if (rowAnth1)  rowAnth1.hidden  = true;
-      if (rowAnth2)  rowAnth2.hidden  = true;
-      // Scroll the AI heading into view (don't smooth-scroll — we need to
-      // measure positions for the spotlight, and a slow animation interferes).
-      const target = document.getElementById('settings-ai');
-      if (target && target.scrollIntoView) target.scrollIntoView({ block: 'start' });
-      // Bump the modal above the tutorial backdrop so it's visible.
-      document.body.classList.add('tut-with-modal');
-    },
-    onLeave: () => {
-      const bg = document.getElementById('modal-bg');
-      if (bg) bg.classList.remove('show');
-      document.body.classList.remove('tut-with-modal');
-    },
+    selector: '#btn-settings',
+    title: 'Settings',
+    body:  "Batch size, daily new-card cap, voice preference, AI Explain key, and more. Stats are next to it.",
   },
   {
     selector: null,
@@ -105,11 +76,8 @@ let _stepIndex = 0;
 let _resizeHandler = null;
 
 export function maybeStartTutorial() {
-  // Skip if already completed
   if (S.tutorialDone) return;
-  // Skip if the user has any progress (they've been here before)
   if (S.progress && S.progress.size > 0) return;
-  // Wait a beat for the first card to fully render
   setTimeout(() => startTutorial(), 350);
 }
 
@@ -117,7 +85,6 @@ export function startTutorial() {
   _stepIndex = 0;
   ensureOverlay();
   showStep(0);
-  // Re-position when window resizes so tooltips/spotlights stay anchored
   _resizeHandler = () => showStep(_stepIndex);
   window.addEventListener('resize', _resizeHandler);
 }
@@ -143,40 +110,12 @@ function ensureOverlay() {
   `;
   document.body.appendChild(overlay);
 
-  $('tut-skip').addEventListener('click', () => {
-    // run onLeave for the current step if it has one
-    const cur = STEPS[_stepIndex];
-    if (cur && cur.onLeave) cur.onLeave();
-    endTutorial();
-  });
-  $('tut-prev').addEventListener('click', () => {
-    if (_stepIndex > 0) gotoStep(_stepIndex - 1);
-  });
+  $('tut-skip').addEventListener('click', endTutorial);
+  $('tut-prev').addEventListener('click', () => { if (_stepIndex > 0) showStep(_stepIndex - 1); });
   $('tut-next').addEventListener('click', () => {
-    if (_stepIndex >= STEPS.length - 1) {
-      const cur = STEPS[_stepIndex];
-      if (cur && cur.onLeave) cur.onLeave();
-      endTutorial();
-    } else {
-      gotoStep(_stepIndex + 1);
-    }
+    if (_stepIndex >= STEPS.length - 1) endTutorial();
+    else showStep(_stepIndex + 1);
   });
-}
-
-/** Navigate from the current step to a target step, running onLeave/onEnter
- *  hooks in order. onEnter is awaited before painting the step so the new
- *  spotlight target (e.g., a row in a freshly-opened settings modal) is
- *  in the DOM when we measure it. */
-async function gotoStep(newIndex) {
-  const cur = STEPS[_stepIndex];
-  const next = STEPS[newIndex];
-  if (cur && cur !== next && cur.onLeave) cur.onLeave();
-  if (next && next.onEnter) {
-    try { await next.onEnter(); } catch (e) { console.error('tutorial onEnter:', e); }
-    // Small extra beat for the modal to render rows / scroll to settle
-    await new Promise(r => setTimeout(r, 80));
-  }
-  showStep(newIndex);
 }
 
 function showStep(i) {
@@ -189,7 +128,6 @@ function showStep(i) {
   $('tut-title').textContent = step.title;
   $('tut-body').textContent  = step.body;
 
-  // Update button labels
   const nextBtn = $('tut-next');
   const prevBtn = $('tut-prev');
   nextBtn.textContent = step.cta
@@ -199,7 +137,6 @@ function showStep(i) {
   if (step.selector) {
     const el = document.querySelector(step.selector);
     if (el) {
-      // Position the cutout around the element
       const r = el.getBoundingClientRect();
       const pad = 8;
       cutout.style.display = 'block';
@@ -207,12 +144,10 @@ function showStep(i) {
       cutout.style.top    = `${Math.max(0, r.top - pad)}px`;
       cutout.style.width  = `${r.width  + pad * 2}px`;
       cutout.style.height = `${r.height + pad * 2}px`;
-      // Place the tooltip just below the element (or above if near bottom)
       positionTip(tip, r);
       return;
     }
   }
-  // No selector (or element missing) → center the tip, hide the cutout
   cutout.style.display = 'none';
   tip.style.left = '50%';
   tip.style.top  = '50%';
@@ -220,16 +155,13 @@ function showStep(i) {
 }
 
 function positionTip(tip, r) {
-  // Reset transform so we measure properly
   tip.style.transform = 'none';
-  // Make it visible to measure
   tip.style.left = '0px';
   tip.style.top  = '0px';
   const tipRect = tip.getBoundingClientRect();
   const margin = 16;
   const viewportW = window.innerWidth;
   const viewportH = window.innerHeight;
-  // Prefer below; flip to above if it would overflow
   let top;
   if (r.bottom + margin + tipRect.height < viewportH) {
     top = r.bottom + margin;
@@ -238,7 +170,6 @@ function positionTip(tip, r) {
   } else {
     top = Math.max(margin, viewportH - tipRect.height - margin);
   }
-  // Center horizontally on the target, clamped to viewport
   let left = r.left + r.width / 2 - tipRect.width / 2;
   left = Math.max(margin, Math.min(left, viewportW - tipRect.width - margin));
   tip.style.left = `${left}px`;

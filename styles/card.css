@@ -267,6 +267,12 @@ body[data-fontsize="lg"] .translation { font-size: 17px; }
   gap: 6px;
 }
 .explain-toggle:hover { border-color: var(--ink); color: var(--ink); }
+.explain-toggle.explain-preview {
+  opacity: 0.6;
+  cursor: pointer;
+  position: relative;
+}
+.explain-toggle.explain-preview:hover { border-color: var(--ink); color: var(--ink); opacity: 1; }
 .explain-toggle.loading {
   border-color: var(--accent);
   color: var(--accent);

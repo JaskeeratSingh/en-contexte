@@ -1,9 +1,9 @@
 import { speak } from './audio.js';
 import { dismissCurrent, renderDismissPopover } from './dismiss.js';
-import { renderExplainBlock, requestExplain } from './explain.js';
+import { renderExplainBlock, renderExplainBlockPreview, requestExplain } from './explain.js';
 import { iconPlay } from './icons.js';
 import { persistBatch, saveMeta } from './persistence.js';
-import { advance, buildPool, mcqOpts, submitMcq, submitTyped } from './scheduler.js';
+import { advance, buildPool, mcqOpts, recordAnswer, submitMcq, submitTyped } from './scheduler.js';
 import { openSettings } from './settings.js';
 import { isMasteredP } from './srs.js';
 import { BATCH_GRADUATE_STREAK, POINTS_MCQ, POINTS_TYPED, S } from './state.js';
@@ -94,7 +94,7 @@ export function render() {
         }
       </div>
 
-      ${S.answered ? renderExplainBlock(r) : ''}
+      ${S.answered ? renderExplainBlock(r) : renderExplainBlockPreview()}
       ${S.showDismissPopover ? renderDismissPopover(r) : ''}
     </div>
 
@@ -140,11 +140,21 @@ export function render() {
     });
   });
 
-  // Explain button (only present after answering)
+  // Explain button (present after answering)
   const exb = $('btn-explain');
   if (exb) exb.addEventListener('click', () => requestExplain(r.id));
   const exbNeedKey = $('btn-explain-need-key');
   if (exbNeedKey) exbNeedKey.addEventListener('click', openSettings);
+  // Explain preview button (present before answering): clicking reveals the
+  // answer (counts as giving up) then immediately triggers explain.
+  const exbPreview = $('btn-explain-preview');
+  if (exbPreview) exbPreview.addEventListener('click', async () => {
+    // Record as wrong (the user didn't type an answer)
+    S.lastChoice = null;
+    await recordAnswer(false, 'type');
+    // Now request the explanation
+    requestExplain(r.id);
+  });
 
   // Dismiss flow: × in card meta opens a confirm popover; popover has
   // "Hide it" (commit), "Cancel" (close), and an optional "Report on GitHub"

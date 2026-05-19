@@ -24,6 +24,20 @@ export function renderExplainBlock(r) {
   </div>`;
 }
 
+/** Pre-answer preview: the Explain button is visible but disabled with a
+ *  tooltip warning that clicking it would reveal the answer. This ensures
+ *  the button is always visible in the UI (important for the tutorial). */
+export function renderExplainBlockPreview() {
+  const haveKey = currentExplainKey();
+  const label = haveKey ? 'Explain' : 'Explain (add key)';
+  return `<div class="explain">
+    <button class="explain-toggle explain-preview" id="btn-explain-preview"
+            data-warn="Reveals the answer. Try &quot;I don't know&quot; if stuck">
+      ${label}
+    </button>
+  </div>`;
+}
+
 
 export function currentExplainKey() {
   return S.explainProvider === 'gemini' ? S.geminiKey : S.apiKey;
@@ -169,7 +183,7 @@ export function buildExplainPrompt(r) {
 
 French: "${r.fr}"
 English: "${r.en}"
-Word being tested (the answer): "${r.ans}"
+Word being tested (the cloze answer): "${r.ans}"
 
 Structure your response exactly like this:
 
@@ -186,7 +200,7 @@ Then a numbered list, **one item per French word or tightly-connected word group
 
 After the numbered list, write **"Putting it all together:"** as a short paragraph, followed by an indented bullet list that maps each chunk of French to English (e.g. * "Il" (He) +). End with a complete summary sentence.
 
-Finally, add **one short paragraph** about the grammar context: what tense or construction this sentence demonstrates, when learners encounter it, and any note about the word "${r.ans}" specifically (e.g. is it tricky, is it irregular, common pitfalls).
+Finally, add **one short paragraph** about the grammar context: what tense or construction this sentence demonstrates, when learners encounter it, and any note about the cloze word "${r.ans}" specifically (e.g. is it tricky, is it irregular, common pitfalls).
 
 Formatting rules:
 - Use **bold** for all French words and phrases
