@@ -1,5 +1,5 @@
 import { speak } from './audio.js';
-import { dismissCurrent, renderDismissPopover } from './dismiss.js';
+import { dismissCurrent, renderReportPopover, submitReport } from './dismiss.js';
 import { renderExplainBlock, renderExplainBlockPreview, requestExplain } from './explain.js';
 import { iconPlay } from './icons.js';
 import { persistBatch, saveMeta } from './persistence.js';
@@ -66,7 +66,7 @@ export function render() {
         <div class="right">
           ${isMastered ? '<span class="mastered">★ mastered</span>' : ''}
           <span class="pill">freq #${r.rank}</span>
-          <button class="card-dismiss" id="btn-dismiss" title="Hide this sentence (translation off, not useful, etc)">×</button>
+          <button class="card-report" id="btn-report" title="Report a problem with this sentence">report</button>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ export function render() {
       </div>
 
       ${S.answered ? renderExplainBlock(r) : renderExplainBlockPreview()}
-      ${S.showDismissPopover ? renderDismissPopover(r) : ''}
+      ${S.showDismissPopover ? renderReportPopover(r) : ''}
     </div>
 
     <div class="controls">
@@ -156,35 +156,50 @@ export function render() {
     requestExplain(r.id);
   });
 
-  // Dismiss flow: × in card meta opens a confirm popover; popover has
-  // "Hide it" (commit), "Cancel" (close), and an optional "Report on GitHub"
-  // link that opens a pre-filled issue.
-  const dismissBtn = $('btn-dismiss');
-  if (dismissBtn) dismissBtn.addEventListener('click', (e) => {
+  // Report flow: "report" button in card meta opens the report popover.
+  // The popover has: submit (opens GitHub issue), hide for me (local dismiss),
+  // and cancel.
+  const reportBtn = $('btn-report');
+  if (reportBtn) reportBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     S.showDismissPopover = true;
     render();
   });
-  const dismissConfirm = $('btn-dismiss-confirm');
-  if (dismissConfirm) dismissConfirm.addEventListener('click', dismissCurrent);
-  const dismissCancel = $('btn-dismiss-cancel');
-  if (dismissCancel) dismissCancel.addEventListener('click', () => {
+  const reportSubmit = $('btn-report-submit');
+  if (reportSubmit) reportSubmit.addEventListener('click', () => {
+    submitReport(r);
+    // Also hide the card locally after reporting so the user doesn't see it again
+    dismissCurrent();
+  });
+  const reportHide = $('btn-report-hide');
+  if (reportHide) reportHide.addEventListener('click', dismissCurrent);
+  const reportCancel = $('btn-report-cancel');
+  if (reportCancel) reportCancel.addEventListener('click', () => {
     S.showDismissPopover = false;
     render();
   });
-  // Click outside the popover should close it (but not when clicking inside)
+  // Show/hide the translation input based on the selected reason
+  const reasonSelect = $('report-reason');
+  const translationRow = $('report-translation-row');
+  if (reasonSelect && translationRow) {
+    const toggleTranslation = () => {
+      translationRow.style.display = reasonSelect.value === 'mistranslation' ? 'block' : 'none';
+    };
+    toggleTranslation();
+    reasonSelect.addEventListener('change', toggleTranslation);
+  }
+  // Click outside the popover closes it
   if (S.showDismissPopover) {
     const closeOnOutside = (ev) => {
-      const pop = $('dismiss-popover');
-      const dbtn = $('btn-dismiss');
+      const pop = $('report-popover');
+      const rbtn = $('btn-report');
       if (!pop) return;
       if (pop.contains(ev.target)) return;
-      if (dbtn && dbtn.contains(ev.target)) return;
+      if (rbtn && rbtn.contains(ev.target)) return;
       S.showDismissPopover = false;
       document.removeEventListener('click', closeOnOutside, true);
       render();
     };
-    // Defer to next tick so the click that opened the popover doesn't close it
     setTimeout(() => document.addEventListener('click', closeOnOutside, true), 0);
   }
 
